@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>weather app</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter city name" spellcheck="false">
+            <button><img src="images/search.png" ></button>
+       </div>
+       <div class="error">
+        <p>Invalid City Name</p>
+       </div>
+        <div class="weather">
+            <img src="images/rain.png" class="weather-icon">
+            <h1 class="temp">22 °C</h1>
+            <h2 class="city">Delhi</h2>
+            <div class="details">
+                 <div class="col">
+                    <img src="images/humidity.png" >
+                    <div>
+                        <p class="humidity">50%</p>
+                         <p>Humidity</p>
+                    </div>
+                </div>
+            
+                     <div class="col">
+                         <img src="images/wind.png" >
+                            <div>
+                              <p class="wind">15 km/h</p>
+                              <p>Wind Speed</p>
+                            </div>
+                       </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey ="b0d16f9dd5cb47b4834115346240505";
+        const apiUrl="https://api.weatherapi.com/v1/current.json?q=";
+       
+        const searchBox = document.querySelector(".search input");
+        const searchBtn = document.querySelector(".search button");
+        const weatherIcon = document.querySelector(".weather-icon");
+        async function checkWeather(city){
+           try{ const response = await fetch(apiUrl+ city +`&key=${apiKey}`);
+            if (!response.ok) {
+                    throw new Error('City not found');
+                }
+                
+
+                
+            var data = await response.json();
+           
+        
+    //    function api(){
+    //     fetch("http://api.weatherapi.com/v1/current.json?key=b0d16f9dd5cb47b4834115346240505&q=india")
+    //    .then(res=> res.json())
+    //    .then(data => console.log(data))
+       
+
+       document.querySelector(".city").innerHTML=data.location.name;
+       document.querySelector(".temp").innerHTML=Math.round(data.current.temp_c )+ "°C";
+       document.querySelector(".humidity").innerHTML=data.current.humidity + "%";
+       document.querySelector(".wind").innerHTML=data.current.wind_kph +" km/h";
+
+       //temp f-> data.current.temp_f
+       //temp c -> data.current.temp_c
+       //city -> data.location.name
+       //region -> data.location.region
+       //country -> data.location.country
+        if(data.current.condition.text.toLowerCase().includes("clear"))
+        {
+          weatherIcon.src =`https:${data.current.condition.icon}`;
+        }
+        document.querySelector(".weather").style.display ="block";
+        document.querySelector(".error").style.display ="none";
+       }catch (error) {
+                console.error('Error fetching data:', error.message);
+                errorDiv.style.display = "block";
+                weatherDiv.style.display = "none";
+                errorDiv.querySelector("p").innerText = `Invalid city name: ${city}`;
+            }
+
+    }
+    
+       searchBtn.addEventListener("click",()=>{
+        checkWeather(searchBox.value);
+       });
+    
+    
+    </script>
+    
+</body>
+</html>
